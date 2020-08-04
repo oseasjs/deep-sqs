@@ -28,7 +28,7 @@ This class is also configured to receive one message per time to keep FIFO messa
 * There is a docker compose on `./local/docker-compose.yml` with Redis and Localstack containner (SQS service), that could be run with command:
 
 ```
-docker-compose up -d
+TMPDIR=/private$TMPDIR SERVICES=sns,sqs docker-compose up -d
 ```
 
 

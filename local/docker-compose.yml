@@ -1,0 +1,39 @@
+version: '3.7'
+services:
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+
+  # About Localstack: https://github.com/localstack/localstack
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    ports:
+      - "4567-4599:4567-4599"
+      - "${PORT_WEB_UI-18082}:${PORT_WEB_UI-18082}"
+    environment:
+      - SERVICES=${SERVICES}
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=18082
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+      - KINESIS_ERROR_PROBABILITY=${KINESIS_ERROR_PROBABILITY- }
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
